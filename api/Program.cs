@@ -14,6 +14,7 @@ builder.Services.AddSwaggerGen();
 
 /// declare service for dependency injection.
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 var app = builder.Build();
@@ -31,6 +32,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// AppDbInitializer.Seed(app);
+AppDbInitializer.Seed(app);
 
 app.Run();
