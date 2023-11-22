@@ -26,10 +26,29 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts() {
+        public async Task<ActionResult<List<Product>>> GetProducts(string sort) {
+            Func<IQueryable<Product>, IOrderedQueryable<Product>> sortedQuery;
+
+            if (sort != null) {
+                switch (sort)
+                {
+                    case "priceAsc":
+                        sortedQuery = q => q.OrderBy(i => i.Price);
+                        break;
+                    case "priceDesc":
+                        sortedQuery = q => q.OrderByDescending(i => i.Price);
+                        break;
+                    default:
+                        sortedQuery = q => q.OrderBy(i => i.Name);
+                        break;
+                }
+            } else {
+                sortedQuery = q => q.OrderBy(i => i.Name);
+            }
+
             IEnumerable<Product> products = await _unitOfWork.ProductRepository.GetEntities(
                 filter: null,
-                orderBy: null,
+                orderBy: sortedQuery,
                 includeProperties: "ProductType,ProductBrand"
             );
 
