@@ -37,7 +37,7 @@ namespace api.DAO
             IQueryable<T> query = dbSet.AsQueryable();
 
             if (filter != null) {
-                query.Where(filter);
+                query = query.Where(filter);
             }
             
             if (includeProperties != null && includeProperties != "") {

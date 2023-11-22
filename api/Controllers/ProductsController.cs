@@ -26,7 +26,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts(string sort) {
+        public async Task<ActionResult<List<Product>>> GetProducts(string sort, int? brandId, int? typeId) {
             Func<IQueryable<Product>, IOrderedQueryable<Product>> sortedQuery;
 
             if (sort != null) {
@@ -47,7 +47,7 @@ namespace api.Controllers
             }
 
             IEnumerable<Product> products = await _unitOfWork.ProductRepository.GetEntities(
-                filter: null,
+                filter: x => (!typeId.HasValue || x.ProductTypeId == typeId) && (!brandId.HasValue || x.ProductBrandId == typeId),
                 orderBy: sortedQuery,
                 includeProperties: "ProductType,ProductBrand"
             );
