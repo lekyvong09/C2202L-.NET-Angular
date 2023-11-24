@@ -6,6 +6,7 @@ using api.DAO;
 using api.Data;
 using api.DTO;
 using api.Entities;
+using api.Helpers;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,11 +27,14 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts(string sort, int? brandId, int? typeId) {
+        public ActionResult<PagedList<Product>> GetProducts(
+                    [FromQuery]ProductRequestParams productRequestParams,
+                    [FromQuery]PaginationParams pagination)
+        {
             Func<IQueryable<Product>, IOrderedQueryable<Product>> sortedQuery;
 
-            if (sort != null) {
-                switch (sort)
+            if (productRequestParams.Sort != null) {
+                switch (productRequestParams.Sort)
                 {
                     case "priceAsc":
                         sortedQuery = q => q.OrderBy(i => i.Price);
@@ -46,13 +50,30 @@ namespace api.Controllers
                 sortedQuery = q => q.OrderBy(i => i.Name);
             }
 
-            IEnumerable<Product> products = await _unitOfWork.ProductRepository.GetEntities(
-                filter: x => (!typeId.HasValue || x.ProductTypeId == typeId) && (!brandId.HasValue || x.ProductBrandId == typeId),
+            IQueryable<Product> query = _unitOfWork.ProductRepository.QueryWithCondition(
+                filter: x => 
+                            (string.IsNullOrEmpty(productRequestParams.Search) 
+                                || x.Name.ToLower().Contains(productRequestParams.Search))
+                            && (!productRequestParams.TypeId.HasValue 
+                                || x.ProductTypeId == productRequestParams.TypeId) 
+                            && (!productRequestParams.BrandId.HasValue 
+                                || x.ProductBrandId == productRequestParams.BrandId),
                 orderBy: sortedQuery,
                 includeProperties: "ProductType,ProductBrand"
             );
 
-            return Ok(_mapper.Map<IEnumerable<Product>, IEnumerable<ReturnProduct>>(products));
+            int totalRecord = query.Count();
+
+            query = query.Skip(pagination.PageSize * (pagination.PageNumber - 1)).Take(pagination.PageSize);
+
+            List<ReturnProduct> returnData = _mapper.Map<List<Product>, List<ReturnProduct>>(query.ToList());
+
+            return Ok(new PagedList<ReturnProduct>(
+                pagination.PageNumber,
+                pagination.PageSize,
+                totalRecord,
+                returnData
+            ));
             // return Ok(products.Select(item => new ReturnProduct {
             //     Id = item.Id,
             //     Name = item.Name,
