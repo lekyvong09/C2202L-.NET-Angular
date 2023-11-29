@@ -30,6 +30,13 @@ builder.Services.Configure<ApiBehaviorOptions>(options => {
     };
 });
 
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(policy => 
+    {
+        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200");
+    });
+});
+
 builder.Services.AddAutoMapper(typeof(MyAutoMapper));
 
 /// declare service for dependency injection.
@@ -53,6 +60,8 @@ app.UseStatusCodePagesWithReExecute("/errors/{0}");
 // app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseCors();
 
 app.UseAuthorization();
 
