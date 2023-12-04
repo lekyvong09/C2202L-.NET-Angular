@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { IPagination } from '../models/IPagination';
 import { ShopService } from './shop.service';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { IBrand } from '../models/brand';
+import { IProduct } from '../models/product';
+import { IType } from '../models/product-type';
 
 @Component({
   selector: 'app-shop',
@@ -10,22 +13,48 @@ import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
 })
 export class ShopComponent implements OnInit {
   faRefresh = faRefresh; faSearch = faSearch;
-  products: any[] = [];
-  
+  products: IProduct[] = [];
+  brands: IBrand[] = [];
+  productTypes: IType[] = [];
+
+  typeIdSelected: number = 0;
+
   constructor(private shopService: ShopService) {
   }
 
   ngOnInit(): void {
-    this.callApi();
+    this.getProducts();
+    this.getBrands();
+    this.getTypes();
   }
 
-  callApi() {
-    this.shopService.getProducts().subscribe({
-      next: (response: IPagination) => {
+  getProducts(): void {
+    this.shopService.getProducts(this.typeIdSelected).subscribe({
+      next: (response: IPagination | null) => {
         console.log(response);
-        this.products = response.data;
+        this.products = response!.data;
       }, 
       error: (err) => console.log(err)
     });
   }
+
+  getBrands(): void {
+    this.shopService.getBrands().subscribe({
+      next: (response) => this.brands = response,
+      error: (err) => console.log(err)
+    });
+  }
+
+  getTypes(): void {
+    this.shopService.getTypes().subscribe({
+      next: (response) => this.productTypes = response,
+      error: (err) => console.log(err)
+    });
+  }
+
+  onSelectProductType(typeId: number) {
+    this.typeIdSelected = typeId;
+    this.getProducts();
+  }
+
 }
