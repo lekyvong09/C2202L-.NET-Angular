@@ -13,13 +13,22 @@ export class ShopService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(typeId?: number): Observable<IPagination | null> {
+  getProducts(sort: string, pageNumber: number, pageSize: number , brandId?: number, typeId?: number): Observable<IPagination | null> {
     let params = new HttpParams();
+
+    if (brandId) {
+      params = params.append('brandId', brandId.toString());
+    }
 
     if (typeId) {
       params = params.append('typeId', typeId.toString());
     }
-    return this.http.get<IPagination>(this.baseUrl + 'products?pageSize=20', {params});
+
+    params = params.append('sort', sort);
+    params = params.append('pageNumber', pageNumber.toString());
+    params = params.append('pageSize', pageSize.toString());
+
+    return this.http.get<IPagination>(this.baseUrl + 'products', {params});
   }
 
   getBrands(): Observable<IBrand[]> {
