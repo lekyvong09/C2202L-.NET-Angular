@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IPagination } from '../models/IPagination';
 import { ShopService } from './shop.service';
 import { faRefresh, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +12,8 @@ import { IType } from '../models/product-type';
   styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit {
+  @ViewChild('search') searchElement: ElementRef | undefined;
+
   faRefresh = faRefresh; faSearch = faSearch;
   products: IProduct[] = [];
   brands: IBrand[] = [];
@@ -23,6 +25,7 @@ export class ShopComponent implements OnInit {
   pageNumber = 1;
   pageSize = 3;
   totalCount = 0;
+  search = '';
 
   sortOptions = [
     {name: 'Alphabetical', value: 'name'},
@@ -40,7 +43,7 @@ export class ShopComponent implements OnInit {
   }
 
   getProducts(): void {
-    this.shopService.getProducts(this.sortSelected, this.pageNumber, this.pageSize, this.brandIdSelected, this.typeIdSelected).subscribe({
+    this.shopService.getProducts(this.sortSelected, this.pageNumber, this.pageSize, this.brandIdSelected, this.typeIdSelected, this.search).subscribe({
       next: (response: IPagination | null) => {
         // console.log(response);
         this.products = response!.data;
@@ -82,8 +85,26 @@ export class ShopComponent implements OnInit {
     this.getProducts();
   }
 
-  onPageChanged(event: any) {
-    this.pageNumber = event.page;
+  onPageChanged(eventEmittedNumber: number) {
+    this.pageNumber = eventEmittedNumber;
+    this.getProducts();
+  }
+
+  onSearch() {
+    this.search = this.searchElement?.nativeElement.value;
+    this.getProducts();
+  }
+
+
+  onReset() {
+    this.searchElement!.nativeElement.value = '';
+    this.typeIdSelected = 0;
+    this.brandIdSelected = 0;
+    this.sortSelected = 'name';
+    this.pageNumber = 1;
+    this.pageSize = 3;
+    this.totalCount = 0;
+    this.search = '';
     this.getProducts();
   }
 }
