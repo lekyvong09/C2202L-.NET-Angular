@@ -4,6 +4,7 @@ import { IPagination } from '../models/IPagination';
 import { Observable, map } from 'rxjs';
 import { IBrand } from '../models/brand';
 import { IType } from '../models/product-type';
+import { IProduct } from '../models/product';
 
 @Injectable({
   providedIn: 'root'
@@ -42,4 +43,10 @@ export class ShopService {
   getTypes(): Observable<IType[]> {
     return this.http.get<IBrand[]>(this.baseUrl + 'products/types');
   }
+
+  getProductById(id: number): Observable<IProduct> {
+    return this.http.get<IProduct>(this.baseUrl + 'products/' + id);
+  }
+
+  
 }
