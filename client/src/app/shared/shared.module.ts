@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { PagingHeaderComponent } from './paging-header/paging-header.component';
 import { PagerComponent } from './pager/pager.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,11 @@ import { PagerComponent } from './pager/pager.component';
   imports: [
     CommonModule,
     PaginationModule.forRoot(),
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right',
+      tapToDismiss: true,
+      preventDuplicates: true
+    }),
   ],
   exports: [
     FontAwesomeModule,

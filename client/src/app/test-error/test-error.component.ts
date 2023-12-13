@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class TestErrorComponent {
   baseUrl = environment.apiUrl;
+  validationError: any;
 
   constructor(private http: HttpClient) {}
 
@@ -36,7 +37,10 @@ export class TestErrorComponent {
   get400ValidationError() {
     this.http.get(this.baseUrl + 'buggy/badrequest/onehundred').subscribe({
       next: (res) => console.log(res),
-      error: (err) => console.log(err)
+      error: (err) => {
+        console.log(err);
+        this.validationError = err.errors;
+      }
     });
   }
 }
