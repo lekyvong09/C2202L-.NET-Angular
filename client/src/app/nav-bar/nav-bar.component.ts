@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {faCartShopping} from '@fortawesome/free-solid-svg-icons';
+import { BasketService } from '../basket/basket.service';
 
 
 @Component({
@@ -10,5 +11,7 @@ import {faCartShopping} from '@fortawesome/free-solid-svg-icons';
 export class NavBarComponent {
 
   faCartShopping = faCartShopping;
+
+  constructor(public basketService: BasketService) { }
 
 }
