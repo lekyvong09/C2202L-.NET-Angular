@@ -93,6 +93,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-AppDbInitializer.Seed(app);
+await AppDbInitializer.Seed(app);
 
 app.Run();
