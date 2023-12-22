@@ -1,8 +1,10 @@
 using api.DAO;
 using api.Data;
+using api.Entities.Identity;
 using api.Exceptions;
 using api.Helpers;
 using api.Middleware;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -17,6 +19,23 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(_ => {
 });
 
 builder.Services.AddControllers();
+
+/**
+ * Identity Section
+ */
+builder.Services
+    .AddIdentityCore<AppUser>(option => {
+        option.Password.RequireNonAlphanumeric = false;
+        option.Password.RequireDigit = false;
+        option.Password.RequireLowercase = false;
+        option.Password.RequireUppercase = false;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager<SignInManager<AppUser>>();
+
+builder.Services.AddAuthentication();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -69,6 +88,7 @@ app.UseStaticFiles();
 
 app.UseCors();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

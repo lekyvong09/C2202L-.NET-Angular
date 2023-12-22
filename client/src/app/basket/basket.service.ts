@@ -94,7 +94,14 @@ export class BasketService {
   }
 
   deleteBasket(basket: IBasket) {
-    
+    return this.http.delete(this.baseUrl + 'basket?id=' + basket.id).subscribe({
+      next: () => {
+        this.basket = ({id: '', items: []});
+        this.basketTotal = ({shipping: 0, subtotal: 0, total: 0});
+        localStorage.removeItem('basket_id');
+      },
+      error: (err) => console.log(err)
+    });
   }
 
 

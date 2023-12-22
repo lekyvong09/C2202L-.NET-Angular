@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BasketService } from './basket.service';
 import { faPlusCircle, faMinusCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { IBasketItem } from '../models/basket';
 
 @Component({
   selector: 'app-basket',
@@ -11,4 +12,16 @@ export class BasketComponent {
   faPlusCircle = faPlusCircle; faMinusCircle = faMinusCircle; faTrash= faTrash;
 
   constructor(public basketService: BasketService) {}
+
+  incrementItemQuantity(item: IBasketItem) {
+    this.basketService.incrementItemQuantity(item);
+  }
+
+  decrementItemQuantity(item: IBasketItem) {
+    this.basketService.decrementItemQuantity(item);
+  }
+
+  removeItemFromBasket(item: IBasketItem) {
+    this.basketService.removeItemFromBasket(item);
+  }
 }
